@@ -5,7 +5,7 @@ import numpy as np
 import cv2
 from opencc import OpenCC
 from PIL import Image
-from method import image_converter as ic
+from OCR.method import image_converter
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 from paddleocr import PaddleOCR, draw_ocr
@@ -20,7 +20,7 @@ def convert_s2tw(str):
 def getResult(ocrModel, img_b64code):
     img_input_path = "./ocr_input_img.jpg"
     img_output_path = "./ocr_result_img.jpg"
-    ic.converBase64toImg(img_b64code, False)
+    image_converter.converBase64toImg(img_b64code, False)
     result = ocr.ocr(img_input_path, cls=True)
     ocrText = []
     for line in result:
@@ -35,8 +35,8 @@ def getResult(ocrModel, img_b64code):
     im_show = draw_ocr(image, boxes, font_path='../img_data/ppocr_img/fonts/simfang.ttf')
     im_show = Image.fromarray(im_show)
     im_show.save(img_output_path)
-    ocr_img_b64code = ic.converImgtoBase64(img_output_path)
-    ic.converBase64toImg(ocr_img_b64code, True)
+    ocr_img_b64code = image_converter.converImgtoBase64(img_output_path)
+    image_converter.converBase64toImg(ocr_img_b64code, True)
     # 建立為傳json結果
     ans = {"ocr_img_b64code": ocr_img_b64code}
     ans["ocr_txt"] = ocrText
@@ -48,5 +48,5 @@ if __name__ == '__main__':
     # ocr = PaddleOCR(use_angle_cls=True, lang='ch', use_gpu=True, det_model_dir = det_path, rec_model_dir = rec_path) #sever model
     ocr = PaddleOCR(use_angle_cls=True, lang="ch")  # orginal mobil model
     # ocr = PaddleOCR(use_angle_cls=True, lang='chinese_cht', use_gpu=True, rec_model_dir=cht_mobile_rec_path)  # sever model
-    ans = getResult(ocr, ic.converImgtoBase64(img_path))
+    ans = getResult(ocr, image_converter.converImgtoBase64(img_path))
     print(ans)
