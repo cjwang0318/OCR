@@ -1,11 +1,10 @@
-#conda install flask
+# conda install flask
 from flask import Flask, request
 from flask import url_for
 from opencc import OpenCC
 from OCR import OCR_Kernel
 from paddleocr import PaddleOCR
 import os
-
 
 
 class web_server:
@@ -45,12 +44,13 @@ class web_server:
 
         # decode json
         content = request.json
-        img_b64code = content['img_b64code']
-        answer=OCR_Kernel.getResult(self.ocr, img_b64code)
+        img_b64code = content['image']
+        answer = OCR_Kernel.getResult(self.ocr, img_b64code)
 
         # change status
         self.status = "free"
         return answer
+
 
 if __name__ == '__main__':
     wbs = web_server()
