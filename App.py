@@ -12,6 +12,9 @@ class web_server:
     def __init__(self):
         # create app
         self.app = Flask(__name__)
+        # OCR model path
+        server_det_path = "./OCR_Model/ch_ppocr_server_v2.0_det/ch_ppocr_server_v2.0_det_infer"
+        server_rec_path = "./OCR_Model/ch_ppocr_server_v2.0_rec/ch_ppocr_server_v2.0_rec_infer"
 
         # web api setting
         self.app.add_url_rule('/status', view_func=self.sendStatus, methods=['GET'])
@@ -19,9 +22,8 @@ class web_server:
         # self.app.add_url_rule('/image/query', view_func=self.queryImg, methods=['GET'])
 
         # init core
-        # self.Address_inference = address_inference()
-        self.ocr = PaddleOCR(use_angle_cls=True, lang="ch")  # orginal mobil model
-
+        #self.ocr = PaddleOCR(use_angle_cls=True, lang="ch")  # original mobil model
+        self.ocr = PaddleOCR(use_angle_cls=True, lang='ch', use_gpu=True, rec_model_dir=server_rec_path)  # sever model
         # record status
         self.status = "free"
         self.failCode = ['1', '2', '3', '4', '5']
