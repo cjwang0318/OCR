@@ -33,7 +33,7 @@ sendMessage_json = {
 start = time.time()
 # sent json to server
 # res = requests.post('http://192.168.0.3:5000/getResult', json=sendMessage_json)
-res = requests.post('http://192.168.50.29:5000/getResult', json=sendMessage_json)
+res = requests.post('http://192.168.50.29:6000/getResult', json=sendMessage_json)
 img_output_path = "./result_img.jpg"
 if res.ok:
     outputs = res.json()
