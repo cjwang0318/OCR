@@ -13,9 +13,14 @@ class web_server:
         # create app
         self.app = Flask(__name__)
         # OCR model path
+        mobile_det_path = "./OCR_Model/ch_ppocr_mobile_v2.0_det/ch_ppocr_mobile_v2.0_det_infer"
         server_det_path = "./OCR_Model/ch_ppocr_server_v2.0_det/ch_ppocr_server_v2.0_det_infer"
+        ch_PP_OCRv3_det = "./OCR_Model/ch_PP_OCRv3_det/ch_PP_OCRv3_det_infer"
+        ch_PP_OCRv4_server_det = "./OCR_Model/ch_PP-OCRv4_det_server_infer"
+
         server_rec_path = "./OCR_Model/ch_ppocr_server_v2.0_rec/ch_ppocr_server_v2.0_rec_infer"
         cht_rec_path = "./OCR_Model/chinese_cht_mobile_v2.0_rec/chinese_cht_mobile_v2.0_rec_infer"
+        ch_PP_OCRv4_server_rec = "./OCR_Model/ch_PP-OCRv4_rec_server_infer"
 
         # web api setting
         self.app.add_url_rule('/status', view_func=self.sendStatus, methods=['GET'])
@@ -29,8 +34,11 @@ class web_server:
         #                     rec_model_dir=server_rec_path)  # chs sever det+rec model
         #self.ocr = PaddleOCR(use_angle_cls=True, lang='chinese_cht', use_gpu=True,
         #                     rec_model_dir=cht_rec_path)  # cht sever model
-        self.ocr = PaddleOCR(use_angle_cls=True, lang='chinese_cht', use_gpu=True, det_model_dir=server_det_path,
-                             rec_model_dir=cht_rec_path)  # cht sever model
+        #self.ocr = PaddleOCR(use_angle_cls=True, lang='chinese_cht', use_gpu=True, det_model_dir=server_det_path,
+        #                     rec_model_dir=cht_rec_path)  # cht sever model
+        #self.ocr = PaddleOCR(use_angle_cls=True, lang='chinese_cht', use_gpu=True,
+        #                                          rec_model_dir=cht_rec_path)  # cht sever model
+        self.ocr = PaddleOCR(use_angle_cls=True, lang='ch', use_gpu=True, det_model_dir=ch_PP_OCRv4_server_det, rec_model_dir=ch_PP_OCRv4_server_rec)  # cht sever model
         # record status
         self.status = "free"
 
