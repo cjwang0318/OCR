@@ -1,7 +1,7 @@
 import time
 import re
 import datefinder  # pip install datefinder
-
+from dateutil import parser
 
 def isVaildDate(date):
     try:
@@ -66,6 +66,8 @@ def normalization(str1):
     for key, value in char_to_replace.items():
         # Replace key character with value character in string
         str1 = str1.replace(key, value)
+    d = parser.parse(str1)
+    str1=d.strftime("%Y-%m-%d")
     return str1
 
 
@@ -91,5 +93,5 @@ def get_result(check_list):
 if __name__ == '__main__':
     test_time_list = ['290722', '生產日期：2020 07 14QQ~我', '生產日期：2020-07-14QQ~我',
                       '生產日期：2020:07:14QQ~我',
-                      '生產日期：2020.07.14QQ~我', '生產日期：2022/07/14QQ~我', '生產日期：2020年07月14日QQ~我']
+                      '生產日期：2020.07.14QQ~我', '20230318', '生產日期：2020年07月14日QQ~我']
     print(get_result(test_time_list))
