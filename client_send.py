@@ -22,7 +22,7 @@ def Json_converBase64toImg(img_b64encode, img_file_path, isShow):
         cv2.waitKey()
 
 
-img_path = './img_data/1.jpg'
+img_path = './img_data/6.jpg'
 img_b64code = Json_converImgtoBase64(img_path)
 
 # print(img_b64code)

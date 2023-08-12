@@ -3,6 +3,7 @@ import re
 import datefinder  # pip install datefinder
 from dateutil import parser
 
+
 def isVaildDate(date):
     try:
         if " " in date:
@@ -39,11 +40,14 @@ def extractDate2(date):
         elif "年" in date:
             match = re.search(r'(\d+年\d+月\d+日)', date)
         else:
-            match = re.search(r'((19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01]))', date)
+            match = re.search(r'((19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01]))', date)  # for this format 20230318
+            if match == None:
+                match = re.search(r'(0[1-9]|[12]\d|3[01])(0[1-9]|1[0-2])(0[1-9]|[123]\d)',
+                                  date)  # for this format 290722
     except:
         return None
     if not match == None:
-        result = match.group(1)
+        result = match.group(0)
         # print(result)
         return result
     else:
@@ -67,7 +71,7 @@ def normalization(str1):
         # Replace key character with value character in string
         str1 = str1.replace(key, value)
     d = parser.parse(str1)
-    str1=d.strftime("%Y-%m-%d")
+    str1 = d.strftime("%Y-%m-%d")
     return str1
 
 
@@ -83,15 +87,18 @@ def get_result(check_list):
                 date_list.append(result)
         else:
             date_list.extend(result)
-    for index, value in enumerate(date_list): #normalization
+    for index, value in enumerate(date_list):  # normalization
         date_list[index] = normalization(value)
     date_list = list(dict.fromkeys(date_list))  # remove duplicate
     date_list.sort()  # sort by dat
+    if len(date_list) > 2: # Get first and last date
+        date_list = date_list[::len(date_list) - 1]
     return date_list
 
 
 if __name__ == '__main__':
     test_time_list = ['290722', '生產日期：2020 07 14QQ~我', '生產日期：2020-07-14QQ~我',
                       '生產日期：2020:07:14QQ~我',
-                      '生產日期：2020.07.14QQ~我', '20230318', '生產日期：2020年07月14日QQ~我']
+                      '生產日期：2021.07.14QQ~我', '20230318', '生產日期：2020年07月14日QQ~我']
+    # test_time_list = ['4', '711144', '019464', 'CM05780', 'MFD', '290722', 'EXP', '290725']
     print(get_result(test_time_list))
