@@ -39,7 +39,7 @@ if res.ok:
     outputs = res.json()
     img_ocr_result_b64code = outputs['ocr_img_b64code']
     Json_converBase64toImg(img_ocr_result_b64code, img_output_path, False)
-    print(outputs['ocr_txt'])
+    #print(outputs['ocr_txt'])
     print(outputs['date_txt'])
 
 else:
