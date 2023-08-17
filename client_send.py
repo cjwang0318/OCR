@@ -22,7 +22,7 @@ def Json_converBase64toImg(img_b64encode, img_file_path, isShow):
         cv2.waitKey()
 
 
-img_path = './img_data/6.jpg'
+img_path = './img_data/S__376905744_0.jpg'
 img_b64code = Json_converImgtoBase64(img_path)
 
 # print(img_b64code)
@@ -39,7 +39,7 @@ if res.ok:
     outputs = res.json()
     img_ocr_result_b64code = outputs['ocr_img_b64code']
     Json_converBase64toImg(img_ocr_result_b64code, img_output_path, False)
-    #print(outputs['ocr_txt'])
+    print(outputs['ocr_txt'])
     print(outputs['date_txt'])
 
 else:
