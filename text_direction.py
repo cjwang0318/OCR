@@ -43,21 +43,25 @@ def getDirection(ocrModel, img_input_path):
     result = ocrModel.ocr(img_input_path, cls=True, rec=False, det=False)
 
     for line in result:
-        print(f"Direction={line[0]}")
-        print(f"Confidence={line[1]}")
+        print(f"Direction={line[0]}, and Confidence={line[1]}")
         directionType = line[0]
         confidence = line[1]
+        # if confidence <0.7:
+        #     confidence=0
     return directionType, confidence
 
 
 def direction_detection(ocrModel, img_path, fileList):
+    '''
+        使用兩個方向pair計算權重 
+    '''
     img = cv2.imread(img_path)  # original img file
-    dir_dict={ '0,180': 0.0, '180,180': 0.0, '180,0': 0.0, '0,0': 0.0}
+    dir_dict = {'0,180': 0.0, '180,180': 0.0, '180,0': 0.0, '0,0': 0.0}
     for fileName in fileList:
         img_check = cv2.imread(fileName)
         direction = ""
         weight = 0
-        ckeckName=fileName
+        ckeckName = fileName
         for i in range(2):
             if i > 0:
                 output_ROTATE_90_CLOCKWISE = cv2.rotate(img_check, cv2.ROTATE_90_CLOCKWISE)
@@ -71,10 +75,10 @@ def direction_detection(ocrModel, img_path, fileList):
             weight = weight + confidence
         weight = weight / 2
         print(f"{ckeckName} direction:{direction} and weight:{weight}")
-        value=dir_dict[direction]
-        dir_dict[direction]=value+weight
+        value = dir_dict[direction]
+        dir_dict[direction] = value + weight
     print(dir_dict)
-    direction=max(dir_dict.items(), key=operator.itemgetter(1))[0]
+    direction = max(dir_dict.items(), key=operator.itemgetter(1))[0]
     print(direction)
     if direction == "0,180":
         ans = "ROTATE_0_CLOCKWISE"
@@ -97,14 +101,68 @@ def direction_detection(ocrModel, img_path, fileList):
     return ans
 
 
+def direction_detection2(ocrModel, img_path, fileList):
+    '''
+    使用單個方向計算權重
+    '''
+    img = cv2.imread(img_path)  # original img file
+    dir1_dict = {'0': 0.0, '180': 0.0}
+    dir2_dict = {'0': 0.0, '180': 0.0}
+    for fileName in fileList:
+        img_check = cv2.imread(fileName)
+        checkName = fileName
+        print(checkName)
+        for i in range(2):
+            if i > 0:
+                output_ROTATE_90_CLOCKWISE = cv2.rotate(img_check, cv2.ROTATE_90_CLOCKWISE)
+                cv2.imwrite('./temp.jpg', output_ROTATE_90_CLOCKWISE)
+                fileName = './temp.jpg'
+            directionType, confidence = getDirection(ocrModel, fileName)
+            if i > 0:
+                value = dir2_dict[directionType]
+                dir2_dict[directionType] = value + confidence
+            else:
+                value = dir1_dict[directionType]
+                dir1_dict[directionType] = value + confidence
+
+    dir1 = max(dir1_dict.items(), key=operator.itemgetter(1))[0]
+    dir2 = max(dir2_dict.items(), key=operator.itemgetter(1))[0]
+    direction = dir1 + "," + dir2
+    print(direction)
+    weight1 = dir1_dict[dir1]
+    weight2 = dir2_dict[dir2]
+    print(f"{checkName} direction:{direction} and dir1_weight:{weight1}, dir2_weight:{weight2}")
+
+    if direction == "0,180":
+        ans = "ROTATE_0_CLOCKWISE"
+        cv2.imwrite('./direction_result.jpg', img)
+    elif direction == "180,180":
+        ans = "ROTATE_90_COUNTERCLOCKWISE"
+        output_ROTATE_90_COUNTERCLOCKWISE = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        cv2.imwrite('./direction_result.jpg', output_ROTATE_90_COUNTERCLOCKWISE)
+    elif direction == "180,0":
+        ans = "ROTATE_180"
+        output_ROTATE_180 = cv2.rotate(img, cv2.ROTATE_180)
+        cv2.imwrite('./direction_result.jpg', output_ROTATE_180)
+    elif direction == "0,0":
+        ans = "ROTATE_90_CLOCKWISE"
+        output_ROTATE_90_CLOCKWISE = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+        cv2.imwrite('./direction_result.jpg', output_ROTATE_90_CLOCKWISE)
+    else:
+        ans = "ROTATE_0_CLOCKWISE"
+        cv2.imwrite('./direction_result.jpg', img)
+    return ans
+
+
 if __name__ == '__main__':
-    img_path = './img_data/60_real.jpg'
-    num_of_image_for_check = 30
+    img_path = './img_data/60.jpg'
+    num_of_image_for_check = 10
     # ocr = PaddleOCR(use_angle_cls=True, lang='ch', use_gpu=True, det_model_dir = det_path, rec_model_dir = rec_path) #sever model
     # ocr = PaddleOCR(use_angle_cls=True, lang="ch")  # orginal mobil model
     # ocr = PaddleOCR(use_angle_cls=True, lang='chinese_cht', use_gpu=True, rec_model_dir=cht_mobile_rec_path)  # sever model
     ocrModel = PaddleOCR(use_angle_cls=True, lang='ch', use_gpu=True, cls_model_dir=cls_model,
                          det_model_dir=ch_PP_OCRv4_server_det)  # cht sever model
     fileList = getBBX(ocrModel, img_path, num_of_image_for_check)
-    ans = direction_detection(ocrModel, img_path, fileList)
+    # ans = direction_detection(ocrModel, img_path, fileList)
+    ans = direction_detection2(ocrModel, img_path, fileList)
     print(ans)
