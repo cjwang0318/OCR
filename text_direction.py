@@ -53,7 +53,7 @@ def getDirection(ocrModel, img_input_path):
 
 def direction_detection(ocrModel, img_path, fileList):
     '''
-        使用兩個方向pair計算權重 
+        使用兩個方向pair計算權重
     '''
     img = cv2.imread(img_path)  # original img file
     dir_dict = {'0,180': 0.0, '180,180': 0.0, '180,0': 0.0, '0,0': 0.0}

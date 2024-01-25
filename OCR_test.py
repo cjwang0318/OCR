@@ -3,6 +3,7 @@ import os
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 from paddleocr import PaddleOCR, draw_ocr
+from opencc import OpenCC
 
 # img_path = './ppocr_img/imgs/11.jpg'
 # img_path = './DKSH_img\sample/546150.jpg'
@@ -14,7 +15,8 @@ from paddleocr import PaddleOCR, draw_ocr
 #img_path = './test.jpg'
 #img_path = './img_data/family_img/1_46,60,88,96.jpg'
 #img_path = './img_data/handwriting/49.jpg'
-img_path = './img_data/包裝日期/1.png'
+#img_path = './img_data/包裝日期/1.png'
+img_path = './img_data/合通/其他憑證-1.tif'
 
 
 PPOCRv2_det_path = "./OCR_Model/ch_PP-OCRv2_det/ch_PP-OCRv2_det_infer"
@@ -37,13 +39,18 @@ ocr = PaddleOCR(use_angle_cls=True, lang='ch', use_gpu=True, det_model_dir = ch_
 result = ocr.ocr(img_path, cls=True)
 for line in result:
     print(line)
+
+def convert_s2tw(str):
+    cc = OpenCC('s2tw')  # convert from Simplified Chinese to Traditional Chinese
+    converted = cc.convert(str)
+    return converted
 # 显示结果
 from PIL import Image
-
 image = Image.open(img_path).convert('RGB')
 boxes = [line[0] for line in result]
-txts = [line[1][0] for line in result]
+#txts = [line[1][0] for line in result] #檢體顯示
+txts = [convert_s2tw(line[1][0]) for line in result] #繁體顯示
 scores = [line[1][1] for line in result]
 im_show = draw_ocr(image, boxes, txts, scores, font_path='./img_data/ppocr_img/fonts/simfang.ttf')
 im_show = Image.fromarray(im_show)
-im_show.save('result.jpg')
+im_show.save('其他憑證-1.jpg')

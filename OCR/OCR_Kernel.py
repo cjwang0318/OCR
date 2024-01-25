@@ -7,6 +7,7 @@ from opencc import OpenCC
 from PIL import Image
 from OCR.method import image_converter
 
+
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 from paddleocr import PaddleOCR, draw_ocr
 
